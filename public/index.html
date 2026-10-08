@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NaijaLife</title>
+  <title>NaijaLife 🇳🇬</title>
 
   <style>
     * {
@@ -13,33 +13,48 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: #f2f6f3;
       color: #222;
     }
 
     header {
-      background: #008751;
+      background: linear-gradient(135deg, #008751, #006b40);
       color: white;
-      padding: 18px;
+      padding: 22px 15px;
       text-align: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,.15);
     }
 
     header h1 {
       margin: 0;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      opacity: .9;
     }
 
     .container {
-      max-width: 600px;
+      max-width: 700px;
       margin: 20px auto;
-      padding: 15px;
+      padding: 12px;
     }
 
     .card {
       background: white;
-      padding: 20px;
+      padding: 18px;
       margin-bottom: 15px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border-radius: 16px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.07);
+    }
+
+    .welcome {
+      background: linear-gradient(135deg, #ffffff, #eaf8f0);
+    }
+
+    .welcome h2 {
+      margin-top: 0;
     }
 
     input,
@@ -47,10 +62,10 @@
     select,
     button {
       width: 100%;
-      padding: 12px;
+      padding: 13px;
       margin-top: 8px;
       margin-bottom: 12px;
-      border-radius: 8px;
+      border-radius: 9px;
       border: 1px solid #ccc;
       font-size: 15px;
     }
@@ -67,6 +82,14 @@
       background: #006b40;
     }
 
+    .secondary {
+      background: #333;
+    }
+
+    .danger {
+      background: #b42318;
+    }
+
     .hidden {
       display: none;
     }
@@ -79,9 +102,46 @@
 
     .stat {
       background: #eef8f2;
-      padding: 12px;
-      border-radius: 8px;
+      padding: 14px 8px;
+      border-radius: 10px;
       text-align: center;
+      font-weight: bold;
+    }
+
+    .stat span {
+      display: block;
+      font-size: 19px;
+      margin-top: 5px;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .quick-actions button {
+      margin: 0;
+    }
+
+    .skills {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .skill {
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 9px;
+      font-size: 14px;
+    }
+
+    .job {
+      background: #f7faf8;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
     }
 
     .post {
@@ -95,6 +155,18 @@
       border-radius: 8px;
       margin-bottom: 10px;
       background: #fff3cd;
+    }
+
+    .small {
+      color: #666;
+      font-size: 13px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 13px;
     }
   </style>
 </head>
@@ -112,7 +184,11 @@
   <div id="authSection">
 
     <div class="card">
-      <h2>Create Account</h2>
+      <h2>🆕 Create Account</h2>
+
+      <p class="small">
+        Start your virtual Nigerian life with ₦5,000.
+      </p>
 
       <input
         type="text"
@@ -130,7 +206,7 @@
     </div>
 
     <div class="card">
-      <h2>Login</h2>
+      <h2>🔐 Login</h2>
 
       <input
         type="text"
@@ -154,35 +230,101 @@
 
     <div id="message"></div>
 
+    <!-- WELCOME -->
+    <div class="card welcome">
+      <h2>👋 Welcome, <span id="username"></span>!</h2>
+      <p>Build your career, make money and create your own NaijaLife.</p>
+    </div>
+
+    <!-- STATS -->
     <div class="card">
-      <h2>👤 <span id="username"></span></h2>
+      <h2>📊 Your Life</h2>
 
       <div class="stats">
+
         <div class="stat">
-          💰 Money<br>
-          ₦<span id="money">0</span>
+          💰 Money
+          <span>₦<span id="money">0</span></span>
         </div>
 
         <div class="stat">
-          ⭐ Level<br>
+          ⭐ Level
           <span id="level">1</span>
         </div>
 
         <div class="stat">
-          ⚡ Energy<br>
+          ⚡ Energy
           <span id="energy">100</span>
         </div>
 
         <div class="stat">
-          ✨ XP<br>
+          ✨ XP
           <span id="xp">0</span>
         </div>
+
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="card">
+      <h2>⚡ Quick Actions</h2>
+
+      <div class="quick-actions">
+        <button onclick="scrollToJobs()">💼 Work</button>
+        <button onclick="rest()">😴 Rest</button>
+        <button onclick="scrollToSocial()">📱 Social</button>
+        <button onclick="showMessage('🏠 Home features coming soon!')">
+          🏠 Home
+        </button>
+      </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="card">
+      <h2>🎯 Skills</h2>
+
+      <div class="skills">
+
+        <div class="skill">
+          💼 Sales<br>
+          Level <span id="salesSkill">1</span>
+        </div>
+
+        <div class="skill">
+          📞 Customer Service<br>
+          Level <span id="customerSkill">1</span>
+        </div>
+
+        <div class="skill">
+          ✍️ Writing<br>
+          Level <span id="writingSkill">1</span>
+        </div>
+
+        <div class="skill">
+          📱 Social Media<br>
+          Level <span id="socialSkill">1</span>
+        </div>
+
+        <div class="skill">
+          💻 Technology<br>
+          Level <span id="techSkill">1</span>
+        </div>
+
+        <div class="skill">
+          👗 Fashion<br>
+          Level <span id="fashionSkill">1</span>
+        </div>
+
       </div>
     </div>
 
     <!-- JOBS -->
-    <div class="card">
-      <h2>💼 Jobs</h2>
+    <div class="card" id="jobsSection">
+      <h2>💼 Career</h2>
+
+      <p class="small">
+        Work to earn money and improve your skills.
+      </p>
 
       <select id="jobSelect">
         <option>Sales Representative</option>
@@ -193,20 +335,20 @@
         <option>Fashion Assistant</option>
       </select>
 
-      <button onclick="work()">Work Job</button>
+      <button onclick="work()">💰 Work Job</button>
 
-      <button onclick="rest()">
+      <button onclick="rest()" class="secondary">
         😴 Rest & Restore Energy
       </button>
     </div>
 
     <!-- SOCIAL -->
-    <div class="card">
+    <div class="card" id="socialSection">
       <h2>📱 NaijaLife Social</h2>
 
       <textarea
         id="postContent"
-        placeholder="What's happening?"
+        placeholder="What's happening in your NaijaLife?"
         maxlength="280"
       ></textarea>
 
@@ -215,21 +357,29 @@
       <div id="posts"></div>
     </div>
 
+    <!-- LOGOUT -->
     <div class="card">
-      <button onclick="logout()">Logout</button>
+      <button onclick="logout()" class="danger">
+        Logout
+      </button>
     </div>
 
   </div>
 
 </div>
 
+<footer>
+  🇳🇬 NaijaLife — Your virtual Nigerian life.
+</footer>
+
 <script>
 
 let token = localStorage.getItem("naijalife_token");
 
 function showMessage(text) {
+
   document.getElementById("message").innerHTML =
-    `<div class="message">${text}</div>`;
+    `<div class="message">${escapeHTML(text)}</div>`;
 
   setTimeout(() => {
     document.getElementById("message").innerHTML = "";
@@ -277,9 +427,7 @@ async function register() {
     );
 
     showGame();
-
     updateUser(data.user);
-
     loadPosts();
 
   } catch (error) {
@@ -332,9 +480,7 @@ async function login() {
     );
 
     showGame();
-
     updateUser(data.user);
-
     loadPosts();
 
   } catch (error) {
@@ -371,6 +517,24 @@ function updateUser(user) {
 
   document.getElementById("xp").textContent =
     user.xp;
+
+  document.getElementById("salesSkill").textContent =
+    user.sales_skill;
+
+  document.getElementById("customerSkill").textContent =
+    user.customer_skill;
+
+  document.getElementById("writingSkill").textContent =
+    user.writing_skill;
+
+  document.getElementById("socialSkill").textContent =
+    user.social_skill;
+
+  document.getElementById("techSkill").textContent =
+    user.tech_skill;
+
+  document.getElementById("fashionSkill").textContent =
+    user.fashion_skill;
 }
 
 async function work() {
@@ -398,7 +562,7 @@ async function work() {
     const data = await response.json();
 
     if (!response.ok) {
-      showMessage(data.error);
+      showMessage(data.error || "Unable to work.");
       return;
     }
 
@@ -432,7 +596,7 @@ async function rest() {
     const data = await response.json();
 
     if (!response.ok) {
-      showMessage(data.error);
+      showMessage(data.error || "Unable to rest.");
       return;
     }
 
@@ -477,7 +641,7 @@ async function createPost() {
     const data = await response.json();
 
     if (!response.ok) {
-      showMessage(data.error);
+      showMessage(data.error || "Unable to post.");
       return;
     }
 
@@ -519,7 +683,7 @@ async function loadPosts() {
       div.innerHTML = `
         <strong>@${escapeHTML(post.username)}</strong>
         <p>${escapeHTML(post.content)}</p>
-        <small>${post.created_at}</small>
+        <small>${escapeHTML(post.created_at)}</small>
       `;
 
       posts.appendChild(div);
@@ -541,6 +705,24 @@ function escapeHTML(text) {
   div.textContent = text;
 
   return div.innerHTML;
+}
+
+function scrollToJobs() {
+
+  document
+    .getElementById("jobsSection")
+    .scrollIntoView({
+      behavior: "smooth"
+    });
+}
+
+function scrollToSocial() {
+
+  document
+    .getElementById("socialSection")
+    .scrollIntoView({
+      behavior: "smooth"
+    });
 }
 
 async function logout() {
@@ -600,9 +782,7 @@ async function checkLogin() {
     }
 
     showGame();
-
     updateUser(data.user);
-
     loadPosts();
 
   } catch (error) {
