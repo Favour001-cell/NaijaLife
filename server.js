@@ -77,7 +77,97 @@ const jobs = [
     skill: "fashion_skill"
   }
 ];
+const homes = [
+  {
+    name: "Single Room",
+    price: 0,
+    level: 1
+  },
+  {
+    name: "Self Contain",
+    price: 15000,
+    level: 2
+  },
+  {
+    name: "2 Bedroom Apartment",
+    price: 50000,
+    level: 4
+  },
+  {
+    name: "3 Bedroom Apartment",
+    price: 120000,
+    level: 6
+  },
+  {
+    name: "Luxury Duplex",
+    price: 300000,
+    level: 10
+  },
+  {
+    name: "Mansion",
+    price: 750000,
+    level: 15
+  }
+];
+// Get available homes
+app.get("/api/homes", (req, res) => {
+  res.json({ homes });
+});
 
+// Buy a home
+app.post("/api/buy-home", (req, res) => {
+  const user = getUserFromToken(req);
+
+  if (!user) {
+    return res.status(401).json({
+      error: "Not logged in"
+    });
+  }
+
+  const { home } = req.body;
+
+  const selectedHome = homes.find(
+    item => item.name === home
+  );
+
+  if (!selectedHome) {
+    return res.status(400).json({
+      error: "Home not found"
+    });
+  }
+
+  if (user.level < selectedHome.level) {
+    return res.status(400).json({
+      error: `You need to reach level ${selectedHome.level} to buy this home.`
+    });
+  }
+
+  if (user.money < selectedHome.price) {
+    return res.status(400).json({
+      error: "You don't have enough money."
+    });
+  }
+
+  db.prepare(`
+    UPDATE users
+    SET money = money - ?,
+        home = ?
+    WHERE id = ?
+  `).run(
+    selectedHome.price,
+    selectedHome.name,
+    user.id
+  );
+
+  const updatedUser = db
+    .prepare("SELECT * FROM users WHERE id = ?")
+    .get(user.id);
+
+  res.json({
+    message: `You bought a ${selectedHome.name}!`,
+    user: publicUser(updatedUser)
+  });
+});
 function getUserFromToken(req) {
   const auth = req.headers.authorization || "";
 
