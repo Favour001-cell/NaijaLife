@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NaijaLife</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #222;
+    }
+
+    header {
+      background: #008751;
+      color: white;
+      padding: 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    input,
+    textarea,
+    select,
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    button {
+      background: #008751;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #006b40;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      background: #eef8f2;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .post {
+      border-top: 1px solid #ddd;
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .message {
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: #fff3cd;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🇳🇬 NaijaLife</h1>
+  <p>Live your Nigerian virtual life</p>
+</header>
+
+<div class="container">
+
+  <!-- AUTH -->
+  <div id="authSection">
+
+    <div class="card">
+      <h2>Create Account</h2>
+
+      <input
+        type="text"
+        id="registerUsername"
+        placeholder="Choose username"
+      >
+
+      <input
+        type="password"
+        id="registerPassword"
+        placeholder="Choose password"
+      >
+
+      <button onclick="register()">Create Account</button>
+    </div>
+
+    <div class="card">
+      <h2>Login</h2>
+
+      <input
+        type="text"
+        id="loginUsername"
+        placeholder="Username"
+      >
+
+      <input
+        type="password"
+        id="loginPassword"
+        placeholder="Password"
+      >
+
+      <button onclick="login()">Login</button>
+    </div>
+
+  </div>
+
+  <!-- GAME -->
+  <div id="gameSection" class="hidden">
+
+    <div id="message"></div>
+
+    <div class="card">
+      <h2>👤 <span id="username"></span></h2>
+
+      <div class="stats">
+        <div class="stat">
+          💰 Money<br>
+          ₦<span id="money">0</span>
+        </div>
+
+        <div class="stat">
+          ⭐ Level<br>
+          <span id="level">1</span>
+        </div>
+
+        <div class="stat">
+          ⚡ Energy<br>
+          <span id="energy">100</span>
+        </div>
+
+        <div class="stat">
+          ✨ XP<br>
+          <span id="xp">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- JOBS -->
+    <div class="card">
+      <h2>💼 Jobs</h2>
+
+      <select id="jobSelect">
+        <option>Sales Representative</option>
+        <option>Customer Service</option>
+        <option>Content Writer</option>
+        <option>Social Media Manager</option>
+        <option>Junior Tech Assistant</option>
+        <option>Fashion Assistant</option>
+      </select>
+
+      <button onclick="work()">Work Job</button>
+
+      <button onclick="rest()">
+        😴 Rest & Restore Energy
+      </button>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="card">
+      <h2>📱 NaijaLife Social</h2>
+
+      <textarea
+        id="postContent"
+        placeholder="What's happening?"
+        maxlength="280"
+      ></textarea>
+
+      <button onclick="createPost()">Post</button>
+
+      <div id="posts"></div>
+    </div>
+
+    <div class="card">
+      <button onclick="logout()">Logout</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+let token = localStorage.getItem("naijalife_token");
+
+function showMessage(text) {
+  document.getElementById("message").innerHTML =
+    `<div class="message">${text}</div>`;
+
+  setTimeout(() => {
+    document.getElementById("message").innerHTML = "";
+  }, 4000);
+}
+
+async function register() {
+
+  const username =
+    document.getElementById("registerUsername").value.trim();
+
+  const password =
+    document.getElementById("registerPassword").value;
+
+  if (!username || !password) {
+    showMessage("Please enter username and password.");
+    return;
+  }
+
+  try {
+
+    const response = await fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username,
+        password
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error || "Registration failed.");
+      return;
+    }
+
+    token = data.token;
+
+    localStorage.setItem(
+      "naijalife_token",
+      token
+    );
+
+    showGame();
+
+    updateUser(data.user);
+
+    loadPosts();
+
+  } catch (error) {
+
+    showMessage("Unable to connect to server.");
+
+  }
+}
+
+async function login() {
+
+  const username =
+    document.getElementById("loginUsername").value.trim();
+
+  const password =
+    document.getElementById("loginPassword").value;
+
+  if (!username || !password) {
+    showMessage("Enter your username and password.");
+    return;
+  }
+
+  try {
+
+    const response = await fetch("/api/login", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        username,
+        password
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error || "Login failed.");
+      return;
+    }
+
+    token = data.token;
+
+    localStorage.setItem(
+      "naijalife_token",
+      token
+    );
+
+    showGame();
+
+    updateUser(data.user);
+
+    loadPosts();
+
+  } catch (error) {
+
+    showMessage("Unable to connect to server.");
+
+  }
+}
+
+function showGame() {
+
+  document
+    .getElementById("authSection")
+    .classList.add("hidden");
+
+  document
+    .getElementById("gameSection")
+    .classList.remove("hidden");
+}
+
+function updateUser(user) {
+
+  document.getElementById("username").textContent =
+    user.username;
+
+  document.getElementById("money").textContent =
+    Number(user.money).toLocaleString();
+
+  document.getElementById("level").textContent =
+    user.level;
+
+  document.getElementById("energy").textContent =
+    user.energy;
+
+  document.getElementById("xp").textContent =
+    user.xp;
+}
+
+async function work() {
+
+  const job =
+    document.getElementById("jobSelect").value;
+
+  try {
+
+    const response = await fetch("/api/work", {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+
+      body: JSON.stringify({
+        job
+      })
+
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error);
+      return;
+    }
+
+    updateUser(data.user);
+
+    showMessage(
+      `${data.message}! You earned ₦${data.earned.toLocaleString()}.`
+    );
+
+  } catch (error) {
+
+    showMessage("Something went wrong.");
+
+  }
+}
+
+async function rest() {
+
+  try {
+
+    const response = await fetch("/api/rest", {
+
+      method: "POST",
+
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error);
+      return;
+    }
+
+    updateUser(data.user);
+
+    showMessage("😴 You rested. Energy restored to 100.");
+
+  } catch (error) {
+
+    showMessage("Something went wrong.");
+
+  }
+}
+
+async function createPost() {
+
+  const content =
+    document.getElementById("postContent").value.trim();
+
+  if (!content) {
+    showMessage("Write something first.");
+    return;
+  }
+
+  try {
+
+    const response = await fetch("/api/posts", {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+
+      body: JSON.stringify({
+        content
+      })
+
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.error);
+      return;
+    }
+
+    document.getElementById("postContent").value = "";
+
+    showMessage("Post published! +10 XP");
+
+    loadPosts();
+
+  } catch (error) {
+
+    showMessage("Unable to publish post.");
+
+  }
+}
+
+async function loadPosts() {
+
+  try {
+
+    const response =
+      await fetch("/api/posts");
+
+    const data =
+      await response.json();
+
+    const posts =
+      document.getElementById("posts");
+
+    posts.innerHTML = "";
+
+    data.posts.forEach(post => {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "post";
+
+      div.innerHTML = `
+        <strong>@${escapeHTML(post.username)}</strong>
+        <p>${escapeHTML(post.content)}</p>
+        <small>${post.created_at}</small>
+      `;
+
+      posts.appendChild(div);
+
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+}
+
+function escapeHTML(text) {
+
+  const div =
+    document.createElement("div");
+
+  div.textContent = text;
+
+  return div.innerHTML;
+}
+
+async function logout() {
+
+  try {
+
+    await fetch("/api/logout", {
+
+      method: "POST",
+
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+
+    });
+
+  } catch (error) {}
+
+  localStorage.removeItem("naijalife_token");
+
+  token = null;
+
+  document
+    .getElementById("gameSection")
+    .classList.add("hidden");
+
+  document
+    .getElementById("authSection")
+    .classList.remove("hidden");
+}
+
+async function checkLogin() {
+
+  if (!token) return;
+
+  try {
+
+    const response = await fetch("/api/me", {
+
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+
+      localStorage.removeItem(
+        "naijalife_token"
+      );
+
+      token = null;
+
+      return;
+    }
+
+    showGame();
+
+    updateUser(data.user);
+
+    loadPosts();
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+}
+
+checkLogin();
+
+</script>
+
+</body>
+</html>
